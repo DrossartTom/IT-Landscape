@@ -1,25 +1,30 @@
-services:
-  app:
-    image: node:18-alpine
-    command: sh -c "yarn install && yarn run dev"
-    ports:
-      - 3000:3000
-    working_dir: /app
-    volumes:
-      - ./:/app
-    environment:
-      MYSQL_HOST: mysql
-      MYSQL_USER: root
-      MYSQL_PASSWORD: secret
-      MYSQL_DB: todos
+name: Build and Push Docker Images
 
-  mysql:
-    image: mysql:8.0
-    volumes:
-      - todo-mysql-data:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: todos
+on:
+  push:
+    branches:
+      - main
 
-volumes:
-  todo-mysql-data:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push App Docker Image
+        run: |
+          docker build -t tomdrossart/myapp:latest -f Dockerfile.app .
+          docker push tomdrossart/myapp:latest
+
+      - name: Build and Push MySQL Docker Image
+        run: |
+          docker build -t tomdrossart/mysql:latest -f Dockerfile.mysql .
+          docker push tomdrossart/mysql:latest
