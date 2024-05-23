@@ -3,7 +3,6 @@ version: '3.8'
 services:
   wordpress:
     image: tomdrossart/wordpress:latest
-    build: .
     ports:
       - 8080:80
     environment:
