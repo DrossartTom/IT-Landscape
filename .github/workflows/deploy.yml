@@ -23,8 +23,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
+      - name: Convert repository name to lowercase
+        id: convert_repo_name
+        run: echo "echo '::set-env name=REPO_NAME_LOWER::$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')'" >> $GITHUB_ENV
+
+      - name: Source the environment variables
+        run: source $GITHUB_ENV
+
       - name: Build Docker Image
-        run: docker build -t ghcr.io/${{ github.repository }}/getting-started:latest -f Dockerfile .
+        run: docker build -t ghcr.io/$REPO_NAME_LOWER/getting-started:latest -f Dockerfile .
 
       - name: Push Docker Image
-        run: docker push ghcr.io/${{ github.repository }}/getting-started:latest
+        run: docker push ghcr.io/$REPO_NAME_LOWER/getting-started:latest
