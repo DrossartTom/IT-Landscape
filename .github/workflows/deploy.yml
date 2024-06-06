@@ -35,3 +35,7 @@ jobs:
 
       - name: Push Docker Image
         run: docker push ghcr.io/$REPO_NAME_LOWER/getting-started:latest
+
+      - name: Build Docker Image
+        run: docker build -t ghcr.io/${{ env.REPO_NAME_LOWER }}/getting-started:latest -f Dockerfile .
+
